@@ -37,7 +37,7 @@ class AuthProvider with ChangeNotifier {
   //auth service signup
   Future<void> signUp(
       String email, String password, String name, String phone) async {
-    final url = Uri.parse("http://192.168.0.150:1337/api/v1/user/register");
+    final url = Uri.parse("${dotenv.env['API_URL']}/api/v1/user/register");
 
     Map<String, String> headers = {
       "Content-Type": "application/json",
@@ -60,17 +60,38 @@ class AuthProvider with ChangeNotifier {
       final responseData = json.decode(response.body);
       print(responseData);
 
-      signIn(email, password);
+      signIn(email, password, true);
     } catch (error) {
       throw error;
     }
   }
 
-  Future<void> signIn(
-    String email,
-    String password,
-  ) async {
-    final url = Uri.parse("http://192.168.0.150:1337/api/v1/user/login");
+  Future<void> createBook(String bookName) async {
+    try {
+      final url = Uri.parse("${dotenv.env['API_URL']}/api/v1/book/create");
+
+      Map<String, String> headers = {
+        "Content-Type": "application/json",
+        'Charset': 'utf-8',
+        'api-key': '${dotenv.env['API_KEY']}',
+        'Authorization': 'Bearer ${_token as String}'
+      };
+
+      final response = await http.post(url,
+          body: json.encode(
+            {'bookName': bookName},
+          ),
+          headers: headers);
+
+      final responseData = json.decode(response.body);
+      print(responseData);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> signIn(String email, String password, bool newUser) async {
+    final url = Uri.parse("${dotenv.env['API_URL']}/api/v1/user/login");
 
     Map<String, String> headers = {
       "Content-Type": "application/json",
@@ -117,6 +138,10 @@ class AuthProvider with ChangeNotifier {
       }
       if (kDebugMode) {
         print('_authenticate(): isAuth - ${isAuth.toString()}');
+      }
+
+      if (newUser) {
+        await createBook("New Book");
       }
 
       _autoLogout();

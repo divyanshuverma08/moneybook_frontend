@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
+
+import '../providers/book_provider.dart';
+import '../providers/transaction_provider.dart';
 
 class Transaction extends StatelessWidget {
   const Transaction({
@@ -8,6 +12,9 @@ class Transaction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final transactionProvider =
+        Provider.of<TransactionProvider>(context, listen: false);
+
     return Container(
       width: double.infinity,
       height: MediaQuery.of(context).size.height / 9,
@@ -26,7 +33,7 @@ class Transaction extends StatelessWidget {
                   Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        "Amazon affiliate",
+                        transactionProvider.details,
                         style: TextStyle(
                             fontSize: 15.sp, fontWeight: FontWeight.w600),
                       )),
@@ -52,15 +59,25 @@ class Transaction extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Align(
-                      alignment: Alignment.centerRight,
-                      child: Text(
-                        "1,193",
-                        style: TextStyle(
-                            color: Colors.green,
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w600),
-                      )),
+                  transactionProvider.type == TransactionType.cashIn
+                      ? Align(
+                          alignment: Alignment.centerRight,
+                          child: Text(
+                            transactionProvider.amount.toString(),
+                            style: TextStyle(
+                                color: Colors.green,
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.w600),
+                          ))
+                      : Align(
+                          alignment: Alignment.centerRight,
+                          child: Text(
+                            transactionProvider.amount.toString(),
+                            style: TextStyle(
+                                color: Colors.red,
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.w600),
+                          )),
                   Align(
                       alignment: Alignment.centerRight,
                       child: Text(

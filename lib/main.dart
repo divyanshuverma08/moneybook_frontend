@@ -9,6 +9,7 @@ import './providers/base_provider.dart';
 import './screens/home_screen.dart';
 import './screens/books_screen.dart';
 import './screens/signup_screen.dart';
+import './screens/transaction_add_screen.dart';
 
 void main() async {
   await dotenv.load();
@@ -55,7 +56,11 @@ class MyApp extends StatelessWidget {
                                     )
                                   : SignUpScreen(),
                         ),
-                  routes: {BooksScreen.routeName: (ctx) => BooksScreen()},
+                  routes: {
+                    BooksScreen.routeName: (ctx) => BooksScreen(),
+                    TransactionAddScreen.routeName: (ctx) =>
+                        TransactionAddScreen()
+                  },
                 )),
       ),
     );

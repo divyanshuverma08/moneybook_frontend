@@ -69,10 +69,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
     try {
       // user login
       if (_authMode == AuthMode.login) {
-        await Provider.of<AuthProvider>(context, listen: false).signIn(
-          _authData['email']!,
-          _authData['password']!,
-        );
+        await Provider.of<AuthProvider>(context, listen: false)
+            .signIn(_authData['email']!, _authData['password']!, false);
       } else {
         // Sign user up
         await Provider.of<AuthProvider>(context, listen: false).signUp(
