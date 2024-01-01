@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/book_provider.dart';
+import '../providers/transaction_provider.dart';
 
 class TransactionAddScreen extends StatefulWidget {
   static const routeName = "add-transaction";
@@ -48,7 +49,7 @@ class _TransactionAddScreenState extends State<TransactionAddScreen> {
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
 
     try {
-      Provider.of<BookProvider>(context, listen: false).addTransaction(
+      await Provider.of<BookProvider>(context, listen: false).addTransaction(
           _formData['detail'] as String,
           double.parse(_formData['amount'] as String),
           _transactionInfo['type'],
@@ -63,6 +64,9 @@ class _TransactionAddScreenState extends State<TransactionAddScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final _transactionInfo =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+
     return Scaffold(
       appBar: AppBar(
         iconTheme: const IconThemeData(
@@ -73,7 +77,9 @@ class _TransactionAddScreenState extends State<TransactionAddScreen> {
             const SystemUiOverlayStyle(statusBarColor: Colors.blue),
         backgroundColor: Colors.white,
         title: Text(
-          "Cash In",
+          _transactionInfo['type'] == TransactionType.cashIn
+              ? "Cash In"
+              : "Cash Out",
           style: TextStyle(fontSize: 18.sp, color: Colors.black),
         ),
       ),
@@ -159,12 +165,34 @@ class _TransactionAddScreenState extends State<TransactionAddScreen> {
                     height: 16.h,
                   ),
                   if (_isLoading)
-                    const CircularProgressIndicator()
+                    SizedBox(
+                      width: double.infinity,
+                      child: TextButton(
+                        onPressed: () {},
+                        style: ButtonStyle(
+                            backgroundColor:
+                                MaterialStateProperty.all(Colors.blue),
+                            foregroundColor:
+                                MaterialStateProperty.all(Colors.white),
+                            padding: MaterialStateProperty.all(
+                                EdgeInsets.symmetric(vertical: 14.h)),
+                            textStyle: MaterialStateProperty.all(TextStyle(
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w700,
+                            ))),
+                        child: const CircularProgressIndicator(
+                          color: Colors.white,
+                        ),
+                      ),
+                    )
                   else
                     SizedBox(
                       width: double.infinity,
                       child: TextButton(
-                        onPressed: _submit,
+                        onPressed: () async {
+                          await _submit();
+                          Navigator.pop(context, 'added');
+                        },
                         style: ButtonStyle(
                             backgroundColor:
                                 MaterialStateProperty.all(Colors.blue),

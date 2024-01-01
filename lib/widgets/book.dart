@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../providers/base_provider.dart';
 import '../providers/book_provider.dart';
@@ -8,22 +9,39 @@ import '../providers/book_provider.dart';
 import '../screens/book_screen.dart';
 
 class Book extends StatelessWidget {
-  const Book({Key? key}) : super(key: key);
+  Book();
 
   @override
   Widget build(BuildContext context) {
     final bookData = Provider.of<BookProvider>(context, listen: false);
 
+    Future<void> saveBook() async {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('currentBook', bookData.bookId);
+    }
+
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(
-              builder: (context) => ChangeNotifierProvider.value(
-                value: bookData,
-                child: BookScreen(),
-              ),
-            ),
-            (Route<dynamic> route) => false);
+        // Navigator.of(context).pushAndRemoveUntil(
+        //     MaterialPageRoute(
+        //       builder: (context) => ChangeNotifierProvider.value(
+        //         value: bookData,
+        //         child: BookScreen(
+        //           bookId: bookData.bookId,
+        //         ),
+        //       ),
+        //     ),
+        //     (Route<dynamic> route) => false);
+        // Navigator.of(context).push(MaterialPageRoute(
+        //     builder: (context) => ChangeNotifierProvider.value(
+        //           value: bookData,
+        //           child: BookScreen(
+        //             bookId: bookData.bookId,
+        //             authController: authController,
+        //           ),
+        //         )));
+        Navigator.pop(context, bookData.bookId);
+        saveBook();
       },
       child: Container(
         width: double.infinity,

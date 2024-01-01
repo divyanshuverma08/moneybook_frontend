@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'package:get/get.dart';
+
+import '../controllers/auth_controller.dart';
 
 import '../providers/auth_provider.dart';
 import '../models/http_exception.dart';
@@ -8,6 +11,7 @@ import '../models/http_exception.dart';
 enum AuthMode { signup, login }
 
 class SignUpScreen extends StatefulWidget {
+  static const routeName = '/signup';
   @override
   State<SignUpScreen> createState() => _SignUpScreenState();
 }
@@ -64,10 +68,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
     setState(() {
       _isLoading = true;
     });
-    print("form : $_authData");
 
     try {
       // user login
+      // if (_authMode == AuthMode.login) {
+      //   await Get.find<AuthController>()
+      //       .signIn(_authData['email']!, _authData['password']!, false);
+      // } else {
+      //   // Sign user up
+      //   await Get.find<AuthController>().signUp(_authData['email']!,
+      //       _authData['password']!, _authData['name']!, _authData['phone']!);
+      // }
+
       if (_authMode == AuthMode.login) {
         await Provider.of<AuthProvider>(context, listen: false)
             .signIn(_authData['email']!, _authData['password']!, false);
@@ -98,9 +110,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
       _showErrorDialog(errorMessage);
       rethrow;
     }
-    setState(() {
-      _isLoading = false;
-    });
   }
 
   void _switchAuthMode() {

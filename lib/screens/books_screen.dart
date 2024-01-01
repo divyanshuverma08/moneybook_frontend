@@ -10,7 +10,7 @@ import '../widgets/book.dart';
 class BooksScreen extends StatelessWidget {
   static const routeName = "books-screen";
 
-  BooksScreen({Key? key}) : super(key: key);
+  BooksScreen();
 
   TextEditingController textController = TextEditingController();
 

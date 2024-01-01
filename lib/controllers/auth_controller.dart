@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'dart:convert';
 import 'dart:async';
 
@@ -8,7 +9,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import '../models/http_exception.dart';
 
-class AuthProvider with ChangeNotifier {
+class AuthController extends GetxController {
   String? _token;
   DateTime? _tokenExpiryDate;
   String? _userId;
@@ -161,8 +162,6 @@ class AuthProvider with ChangeNotifier {
           final String currentBook = extractedData[0]['_id'];
 
           await prefs.setString('currentBook', currentBook);
-
-          notifyListeners();
         } catch (e) {
           rethrow;
         }
@@ -170,7 +169,9 @@ class AuthProvider with ChangeNotifier {
 
       _autoLogout();
 
-      notifyListeners();
+      print("update");
+
+      update();
 
       final userData = jsonEncode(
         {
@@ -183,7 +184,7 @@ class AuthProvider with ChangeNotifier {
         print(
             '_authenticate(): userData - ${json.decode(userData).toString()}');
       }
-      prefs.setString('userData', userData);
+      await prefs.setString('userData', userData);
     } catch (error) {
       rethrow;
     }
@@ -219,7 +220,7 @@ class AuthProvider with ChangeNotifier {
       print('autoLogin(): _tokenExpiryDate - ' + expiryDate.toString());
     }
 
-    notifyListeners();
+    update();
     _autoLogout();
     return true;
   }
@@ -243,7 +244,7 @@ class AuthProvider with ChangeNotifier {
       print('logout(): _tokenExpiryDate - ' + _tokenExpiryDate.toString());
     }
 
-    notifyListeners();
+    update();
     final prefs = await SharedPreferences.getInstance();
     prefs.clear();
   }

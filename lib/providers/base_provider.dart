@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import './book_provider.dart';
 
@@ -14,14 +15,18 @@ class BaseProvider with ChangeNotifier {
     return [..._books];
   }
 
-  final String? _token;
-  final String? _userId;
-
-  BaseProvider(this._token, this._userId);
+  String? _token = null;
+  String? _userId = null;
 
   Future<void> getAllBooks() async {
+    final prefs = await SharedPreferences.getInstance();
+
     try {
       final url = Uri.parse("${dotenv.env['API_URL']}/api/v1/book/getbook");
+
+      final extractedUserData = await json.decode(prefs.getString('userData')!);
+      _token = extractedUserData['token'].toString();
+      _userId = extractedUserData['userId'].toString();
 
       Map<String, String> headers = {
         "Content-Type": "application/json",

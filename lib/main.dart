@@ -10,6 +10,7 @@ import './screens/home_screen.dart';
 import './screens/books_screen.dart';
 import './screens/signup_screen.dart';
 import './screens/transaction_add_screen.dart';
+import './screens/user_screen.dart';
 
 void main() async {
   await dotenv.load();
@@ -28,41 +29,75 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (ctx) => AuthProvider(),
         ),
-        ChangeNotifierProxyProvider<AuthProvider, BaseProvider>(
-          create: (ctx) => BaseProvider(null, null),
-          update: (ctx, auth, previousBooks) =>
-              BaseProvider(auth.token, auth.userId),
+        ChangeNotifierProvider<BaseProvider>(
+          create: (ctx) => BaseProvider(),
         )
       ],
-      child: Consumer<AuthProvider>(
-        builder: (ctx, auth, _) => ScreenUtilInit(
-            designSize: const Size(375, 812),
-            builder: (context, child) => MaterialApp(
-                  title: 'Flutter Demo',
-                  theme: ThemeData(
-                    primarySwatch: Colors.blue,
-                  ),
-                  home: auth.isAuth
-                      ? HomeScreen()
-                      : FutureBuilder(
-                          future: auth.tryAutoLogin(),
-                          builder: (ctx, authResultSnapshot) =>
-                              authResultSnapshot.connectionState ==
-                                      ConnectionState.waiting
-                                  ? const Scaffold(
-                                      body: Center(
-                                        child: Text('Loading...'),
-                                      ),
-                                    )
-                                  : SignUpScreen(),
-                        ),
-                  routes: {
-                    BooksScreen.routeName: (ctx) => BooksScreen(),
-                    TransactionAddScreen.routeName: (ctx) =>
-                        TransactionAddScreen()
-                  },
-                )),
+      child: ScreenUtilInit(
+        designSize: const Size(375, 812),
+        builder: (context, child) => Consumer<AuthProvider>(
+          builder: (ctx, auth, _) => ScreenUtilInit(
+              designSize: const Size(375, 812),
+              builder: (context, child) => MaterialApp(
+                    title: 'Flutter Demo',
+                    theme: ThemeData(
+                      primarySwatch: Colors.blue,
+                    ),
+                    home: auth.isAuth
+                        ? HomeScreen()
+                        : FutureBuilder(
+                            future: auth.tryAutoLogin(),
+                            builder: (ctx, authResultSnapshot) =>
+                                authResultSnapshot.connectionState ==
+                                        ConnectionState.waiting
+                                    ? const Scaffold(
+                                        body: Center(
+                                          child: Text('Loading...'),
+                                        ),
+                                      )
+                                    : SignUpScreen(),
+                          ),
+                    routes: {
+                      BooksScreen.routeName: (ctx) => BooksScreen(),
+                      TransactionAddScreen.routeName: (ctx) =>
+                          TransactionAddScreen(),
+                      UserScreen.routeName: (ctx) => UserScreen()
+                    },
+                  )),
+        ),
       ),
     );
   }
 }
+
+// Consumer<AuthProvider>(
+//         builder: (ctx, auth, _) => ScreenUtilInit(
+//             designSize: const Size(375, 812),
+//             builder: (context, child) => MaterialApp(
+//                   title: 'Flutter Demo',
+//                   theme: ThemeData(
+//                     primarySwatch: Colors.blue,
+//                   ),
+//                   home: auth.isAuth ? HomeScreen() : SignUpScreen(),
+//                   routes: {
+//                     BooksScreen.routeName: (ctx) => BooksScreen(),
+//                     TransactionAddScreen.routeName: (ctx) =>
+//                         TransactionAddScreen(),
+//                     UserScreen.routeName: (ctx) => UserScreen()
+//                   },
+//                 )),
+//       )
+
+
+// FutureBuilder(
+//                           future: auth.tryAutoLogin(),
+//                           builder: (ctx, authResultSnapshot) =>
+//                               authResultSnapshot.connectionState ==
+//                                       ConnectionState.waiting
+//                                   ? const Scaffold(
+//                                       body: Center(
+//                                         child: Text('Loading...'),
+//                                       ),
+//                                     )
+//                                   : SignUpScreen(),
+//                         )
